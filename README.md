@@ -1,15 +1,15 @@
 # ubuntu_first-run-setup
 
 01. nano /etc/default/locale
-
+```
 	LC_ALL=en_US.UTF-8
-
+```
 02. nano /etc/ssh/sshd_config
-
+```
 	Port 42022
 	PermitRootLogin without-password
 	PasswordAuthentication no
-    
+```
 03. service ssh restart
 
 04. [open new shell and] ssh servername [and if it works exit the old shell. Proceed on the new shell]
