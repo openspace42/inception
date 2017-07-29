@@ -2,13 +2,13 @@
 
 01. nano /etc/default/locale
 
-        LC_ALL=en_US.UTF-8
+	LC_ALL=en_US.UTF-8
 
 02. nano /etc/ssh/sshd_config
 
-    		Port 42022
-		    PermitRootLogin without-password
-		    PasswordAuthentication no
+	Port 42022
+	PermitRootLogin without-password
+	PasswordAuthentication no
     
 03. service ssh restart
 
@@ -16,7 +16,7 @@
 
 05. reboot
 
-06  dpkg-reconfigure tzdata
+06. dpkg-reconfigure tzdata
 
 07. apt update && apt install screen
 
