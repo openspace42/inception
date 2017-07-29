@@ -25,7 +25,9 @@
 09. apt -y upgrade && apt -y dist-upgrade && apt-get -y autoremove && reboot
 
 10.01.  adduser <username> # insert strong password twice at prompt and return all empty values
+
 10.02.  usermod -aG sudo username
+
 10.03.  sudo passwd -dl root
 
 11. reboot
