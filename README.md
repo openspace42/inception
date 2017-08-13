@@ -1,14 +1,20 @@
 # ubuntu_first-run-setup
 
-01. nano /etc/hostname
+00. log in to your newly creater server via ssh as the root user
+
+01. nano /etc/hostname # once inside nano write:
 ```
 	xx01.hello.world
 ```
-02. nano /etc/default/locale
+02. nano /etc/default/locale # once inside nano delete everything and add this:
 ```
 	LC_ALL=en_US.UTF-8
 ```
-03. nano /etc/ssh/sshd_config
+03.01. cd && mkdir -p .ssh
+
+03.02. nano .ssh/authorized_keys # once inside nano paste the ssh public key you copied from your local workstation
+
+03.03. nano /etc/ssh/sshd_config
 ```
 	Port 42022
 	PermitRootLogin without-password
@@ -16,7 +22,7 @@
 ```
 04. service ssh restart
 
-05. [open new shell and] ssh servername [and if it works exit the old shell. Proceed on the new shell]
+05. [open new shell and] ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and if it works exit the old shell. Proceed on the new shell]
 
 06. reboot
 
@@ -36,7 +42,7 @@
 
 12. reboot
 
-13. apt -y install fail2ban ufw ntp git haveged glances software-properties-common
+13. apt -y install fail2ban ufw ntp git haveged glances
 
 14. ufw limit 42022 && ufw enable
 
