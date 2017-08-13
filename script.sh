@@ -37,7 +37,12 @@ sleep 4
 nano /etc/ssh/sshd_config
 service ssh restart
 
-echo "Now open a new shell and ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and if it works exit the old shell. Proceed on the new shell]"
+echo "Now open a new shell and ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and check it works]"
+echo
+
+echo "The rest of the installation will continue after reboot"
+echo
+
 echo "I will reboot in 108 seconds. You can also reboot manually now by issuing the "reboot" command"
 echo
 
