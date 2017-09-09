@@ -42,7 +42,7 @@
 
 12. reboot
 
-13. apt -y install fail2ban ufw ntp git haveged glances
+13. apt -y install sudo fail2ban ufw ntp git haveged glances
 
 14. ufw limit 42022 && ufw enable
 
