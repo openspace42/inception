@@ -1,5 +1,7 @@
 # ubuntu_first-run-setup
 
+## New: for automated script check out [script.sh](https://github.com/nikksno/ubuntu_first-run-setup/blob/master/script.sh)
+
 00. log in to your newly creater server via ssh as the root user
 
 01. nano /etc/hostname # once inside nano write:
