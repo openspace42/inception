@@ -1,5 +1,7 @@
 #!/bin/bash
 
+sshconfigfile=sshd_config
+
 echo
 
 echo "ubuntu_first-run-setup by nikksno [https://github.com/nikksno/ubuntu_first-run-setup]"
@@ -38,14 +40,82 @@ echo $sshpubkey > /root/.ssh/authorized_keys
 echo "SSH Public key set."
 echo
 
-echo At next command, once inside nano make the following changes: (no quotes)
-echo "Port 42022"
-echo "PermitRootLogin without-password"
-echo "PasswordAuthentication no"
+exit
+
+echo "4] Now setting SSH hardened values"
+echo
+sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" /etc/ssh/sshd_config
+echo "Changed 'PermitRootLogin' to 'prohibit-password'."
+echo
+sed -i "/PasswordAuthentication/c\PasswordAuthentication no" sshd_config
+echo "Changed 'PasswordAuthentication' to 'no'."
+echo
+read -p "Also change SSH port to 42022? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	if grep -Fq "Port " $sshconfigfile
+	then
+	        echo "'Port' line found, checking syntax"
+	        echo
+	        if grep -Eq '^ *Port ' $sshconfigfile; then
+	                echo "'Port' syntax correct, changing Port to 42022"
+	                echo
+	                sed -i "/Port /c\Port 42022" $sshconfigfile
+			echo "Port changed to 42022"
+			echo
+	        else
+	                echo "'Port' syntax abnormal [commented, or other]. Re-inserting line with Port set to 42022..."
+	                echo
+	                sed -i "/Port /c\Port 42022" $sshconfigfile
+			echo "Line re-inserted with Port set to 42022"
+			echo
+	        fi
+	else
+	        echo "'Port' line not found, adding line with Port set to 42022..."
+	        echo
+	        sed -i '1iPort 42022' $sshconfigfile
+		echo "Line added with Port set to 42022"
+		echo
+	fi
+
+	read -p "Also install UFW, set 'limit 42022', and enable UFW? (Y/n): " -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Nn]$ ]]
+	then
+		echo "Executing APT update..."
+		echo
+		apt-get update
+		echo "Installing UFW"
+		echo
+		apt-get install ufw
+		echo "Allowing Ports 42022 and 22 [for current session] in 'limit' mode and enabling UFW"
+		echo
+		ufw limit 42022
+		ufw limit 22
+		ufw enable
+		echo "All done with UFW"
+		echo
+	else
+		echo "Not changing firewall settings. Remember to do so manually right away!
+		echo
+		echo "Executing APT update"
+		echo
+		apt-get update
+		echo "Done with APT"
+		echo
+	fi
+
+else
+
+	echo "Not changing SSHD Port"
+	ehco
+
+fi
+
+echo "Restarting SSHD"
 echo
 
-sleep 4
-nano /etc/ssh/sshd_config
 service ssh restart
 
 echo "Now open a new shell and ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and check it works]"
