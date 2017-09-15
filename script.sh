@@ -40,8 +40,6 @@ echo $sshpubkey > /root/.ssh/authorized_keys
 echo "SSH Public key set."
 echo
 
-exit
-
 echo "4] Now setting SSH hardened values"
 echo
 sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" /etc/ssh/sshd_config
@@ -86,22 +84,28 @@ then
 		echo "Executing APT update..."
 		echo
 		apt-get update
+		echo
 		echo "Installing UFW"
 		echo
 		apt-get install ufw
+		echo
 		echo "Allowing Ports 42022 and 22 [for current session] in 'limit' mode and enabling UFW"
 		echo
 		ufw limit 42022
+		echo
 		ufw limit 22
+		echo
 		ufw enable
+		echo
 		echo "All done with UFW"
 		echo
 	else
-		echo "Not changing firewall settings. Remember to do so manually right away!
+		echo "Not changing firewall settings. Remember to do so manually right away!"
 		echo
 		echo "Executing APT update"
 		echo
 		apt-get update
+		echo
 		echo "Done with APT"
 		echo
 	fi
@@ -109,7 +113,13 @@ then
 else
 
 	echo "Not changing SSHD Port"
-	ehco
+	echo
+	echo "Executing APT update"
+        echo
+        apt-get update
+        echo
+        echo "Done with APT"
+        echo
 
 fi
 
