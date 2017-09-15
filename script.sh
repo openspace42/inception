@@ -1,6 +1,6 @@
 #!/bin/bash
 
-sshconfigfile=sshd_config
+sshconfigfile=/etc/ssh/sshd_config
 
 echo
 
@@ -170,7 +170,7 @@ then
 	echo "Done with APT install"
 	echo
 else
-	echo "Not installing packages"
+	echo "Skipping packages install"
 	echo
 fi
 
