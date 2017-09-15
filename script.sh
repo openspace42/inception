@@ -159,4 +159,52 @@ sudo passwd -dl root
 echo "Root password unset"
 echo
 
+echo "9] Install recommended packages: sudo fail2ban ufw ntp git haveged glances"
 echo
+read -p "Should we proceed? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	apt-get -y install sudo fail2ban ufw ntp git haveged glances
+	echo
+	echo "Done with APT install"
+	echo
+else
+	echo "Not installing packages"
+	echo
+fi
+
+echo "10] It is highly recommended to upgrade all system packages now."
+echo
+read -p "Should we proceed? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y autoremove && reboot
+        echo
+        echo "Done with APT upgrades"
+        echo
+else
+	echo "Skipping APT upgrades"
+	echo
+fi
+
+echo "11] It is highly recommended to reboot the system now."
+echo
+read -p "Should we proceed? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	echo "REBOOTING SYSTEM NOW"
+        echo
+	echo "Thank you for using this script! Bye!"
+	echo
+	sleep 4 && reboot
+else
+	echo "Skipping system reboot. Remember to do so manually as soon as possible!"
+	echo
+	echo "Thank you for using this script! Bye!"
+	echo
+fi
+
+exit
