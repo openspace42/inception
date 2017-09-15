@@ -2,30 +2,41 @@
 
 echo
 
-echo ubuntu_first-run-setup by Nk [https://github.com/nikksno/ubuntu_first-run-setup]
+echo "ubuntu_first-run-setup by nikksno [https://github.com/nikksno/ubuntu_first-run-setup]"
 echo
 
 echo "Run this once logged into your newly creater server via ssh as the root user"
 echo
-
-echo At next command, once inside nano write: [xx01.hello.world] (change with hostname of machine)
+read -p "Are you currently root in your target machine (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
 echo
 
-sleep 4
-nano /etc/hostname
-
-echo At next command, once inside nano delete everything and add this: "LC_ALL=en_US.UTF-8" (no quotes)
+echo "Confirmed. Now continuing..."
 echo
 
-sleep 4
-nano /etc/default/locale
-
-echo At next command, once inside nano paste the ssh public key you copied from your local workstation
+read -p "1] Set machine hostname in the format: xm01.hello.world: " hostname
+echo
+read -p "Is | $hostname | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+echo
+echo $hostname > /etc/hostname
+echo "Hostname set."
 echo
 
-sleep 4
-cd && mkdir -p .ssh
-nano .ssh/authorized_keys
+echo "2] Now setting correct locale..."
+echo
+echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
+echo "Locale set."
+echo
+
+read -p "3] Now paste the ssh public key you copied from your local workstation here: " sshpubkey
+echo
+read -p "Is it correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+echo
+mkdir -p /root/.ssh/
+touch /root/.ssh/authorized_keys
+chmod 600 /root/.ssh/authorized_keys
+echo $sshpubkey > /root/.ssh/authorized_keys
+echo "SSH Public key set."
+echo
 
 echo At next command, once inside nano make the following changes: (no quotes)
 echo "Port 42022"
