@@ -180,7 +180,7 @@ read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y autoremove && reboot
+	apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y autoremove
         echo
         echo "Done with APT upgrades"
         echo
