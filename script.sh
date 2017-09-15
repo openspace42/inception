@@ -40,7 +40,14 @@ echo $sshpubkey > /root/.ssh/authorized_keys
 echo "SSH Public key set."
 echo
 
-echo "4] Now setting SSH hardened values"
+echo "4] Executing APT update"
+echo
+apt-get update
+echo
+echo "Done with APT"
+echo
+
+echo "5] Now setting SSH hardened values"
 echo
 sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" /etc/ssh/sshd_config
 echo "Changed 'PermitRootLogin' to 'prohibit-password'."
@@ -81,10 +88,6 @@ then
 	echo
 	if [[ ! $REPLY =~ ^[Nn]$ ]]
 	then
-		echo "Executing APT update..."
-		echo
-		apt-get update
-		echo
 		echo "Installing UFW"
 		echo
 		apt-get install ufw
@@ -102,24 +105,12 @@ then
 	else
 		echo "Not changing firewall settings. Remember to do so manually right away!"
 		echo
-		echo "Executing APT update"
-		echo
-		apt-get update
-		echo
-		echo "Done with APT"
-		echo
 	fi
 
 else
 
 	echo "Not changing SSHD Port"
 	echo
-	echo "Executing APT update"
-        echo
-        apt-get update
-        echo
-        echo "Done with APT"
-        echo
 
 fi
 
@@ -127,14 +118,45 @@ echo "Restarting SSHD"
 echo
 
 service ssh restart
-
-echo "Now open a new shell and ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and check it works]"
 echo
 
-echo "The rest of the installation will continue after reboot"
+echo "Now, on your workstation, open a new terminal and open a new SSH session to this server with the specified SSH key and on the correct port."
+echo
+echo "If that works, close that session, come back to this one, and continue running this script, otherwise start over."
 echo
 
-echo "I will reboot in 108 seconds. You can also reboot manually now by issuing the "reboot" command"
+read -p "Has the new SSH session worked? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
 echo
 
-sleep 108 && reboot
+echo "Ok, continuing..."
+echo
+
+read -p "6] Now setting timezone. Do so at the next screen. Press enter to continue"
+echo
+
+dpkg-reconfigure tzdata
+echo
+
+echo "7] Now we're going to create the non-root user."
+echo
+read -p "1] Set the new user's username: " username
+echo
+read -p "Is | $username | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+echo
+echo "Now follow the requestes steps..."
+echo
+adduser --gecos "" $username
+echo
+echo "Now allowing newly created user to 'sudo'"
+echo
+usermod -aG sudo $username
+echo "Sudo set"
+echo
+
+echo "8] Now unsetting root password"
+echo
+sudo passwd -dl root
+echo "Root password unset"
+echo
+
+echo
