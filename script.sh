@@ -3,6 +3,7 @@
 currhostname="$(cat /etc/hostname)"
 sshauthkeyfile=/root/.ssh/authorized_keys
 sshconfigfile=/etc/ssh/sshd_config
+currusers="$(cat /etc/passwd | cut -d: -f 1,3,6 | grep "[1-9][0-9][0-9][0-9]" | grep "/home" | cut -d: -f1)"
 
 echo
 
@@ -184,21 +185,33 @@ echo
 dpkg-reconfigure tzdata
 echo
 
-echo "7] Now we're going to create the non-root user."
+echo "7] Create the non-root user."
 echo
-read -p "1] Set the new user's username: " username
+echo "The current non-root users are:"
 echo
-read -p "Is | $username | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+echo $currusers
 echo
-echo "Now follow the requestes steps..."
+read -p "Add non-root user now? (Y/n): " -n 1 -r
 echo
-adduser --gecos "" $username
-echo
-echo "Now allowing newly created user to 'sudo'"
-echo
-usermod -aG sudo $username
-echo "Sudo set"
-echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	read -p "Ok, adding user. Specify the new user's username: " username
+	echo
+	read -p "Is | $username | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+	echo
+	echo "Now enter new user's password when requested..."
+	echo
+	adduser --gecos "" $username
+	echo
+	echo "Now allowing newly created user to 'sudo'"
+	echo
+	usermod -aG sudo $username
+	echo "Sudo set"
+	echo
+else
+	echo "Skipping non-root user creation"
+	echo
+fi
 
 echo "8] Now unsetting root password"
 echo
