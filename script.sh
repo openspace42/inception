@@ -103,34 +103,72 @@ echo
 sed -i "/PasswordAuthentication/c\PasswordAuthentication no" sshd_config
 echo "Changed 'PasswordAuthentication' to 'no'."
 echo
-read -p "Also change SSH port to 42022? (Y/n): " -n 1 -r
+echo "Now checking current SSH port setting..."
 echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
+
+if grep -Fq "Port " $sshconfigfile
 then
-	if grep -Fq "Port " $sshconfigfile
+	echo "'Port' line found, checking syntax"
+	echo
+	if grep -Eq '^ *Port ' $sshconfigfile
 	then
-	        echo "'Port' line found, checking syntax"
-	        echo
-	        if grep -Eq '^ *Port ' $sshconfigfile; then
-	                echo "'Port' syntax correct, changing Port to 42022"
-	                echo
-	                sed -i "/Port /c\Port 42022" $sshconfigfile
-			echo "Port changed to 42022"
+		echo "'Port' syntax correct"
+		echo
+		if grep -Eq '^ *Port 42022' $sshconfigfile
+		then
+			echo "SSH port already set to 42022."
 			echo
-	        else
-	                echo "'Port' syntax abnormal [commented, or other]. Re-inserting line with Port set to 42022..."
-	                echo
-	                sed -i "/Port /c\Port 42022" $sshconfigfile
+			sshportchanged=y
+		else
+			read -p "SSH port NOT set to 42022. Change it? (Y/n): " -n 1 -r
+			echo
+			if [[ ! $REPLY =~ ^[Nn]$ ]]
+			then
+				echo "Ok, changing Port to 42022"
+				echo
+				sed -i "/Port /c\Port 42022" $sshconfigfile
+				sshportchanged=y
+				echo "Port changed to 42022"
+				echo
+			else
+				echo "Not changing SSHD Port"
+				echo
+				sshportchanged=n
+			fi
+	else
+		read -p "'Port' syntax abnormal [commented, or other]. Fix it and set it to 42022? (Y/n): " -n 1 -r
+		echo
+		if [[ ! $REPLY =~ ^[Nn]$ ]]
+                then
+                        echo "Ok, fixing syntax and setting 'Port' to 42022"
+                        echo
+                        sed -i "/Port /c\Port 42022" $sshconfigfile
+			sshportchanged=y
 			echo "Line re-inserted with Port set to 42022"
 			echo
+		else
+			echo "Leaving Port syntax abnormal [commented, or other]."
+			echo
+			sshportchanged=n
 	        fi
-	else
-	        echo "'Port' line not found, adding line with Port set to 42022..."
-	        echo
-	        sed -i '1iPort 42022' $sshconfigfile
-		echo "Line added with Port set to 42022"
-		echo
 	fi
+else
+	read -p "'Port' line not found. Add it and set it to 42022? (Y/n): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Nn]$ ]]
+        then
+                echo "Ok, adding 'Port' line and setting it to 42022"
+                echo
+		sed -i '1iPort 42022' $sshconfigfile
+                sshportchanged=y
+                echo "Line added with 'Port' set to 42022"
+                echo
+        else
+                echo "Not adding 'Port' line."
+                echo
+                sshportchanged=n
+        fi
+fi
 
 	read -p "Also install UFW, set 'limit 42022', and enable UFW? (Y/n): " -n 1 -r
 	echo
@@ -156,9 +194,6 @@ then
 	fi
 
 else
-
-	echo "Not changing SSHD Port"
-	echo
 
 fi
 
