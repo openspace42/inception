@@ -1,5 +1,7 @@
 #!/bin/bash
 
+currhostname="$(cat /etc/hostname)"
+sshauthkeyfile=/root/.ssh/authorized_keys
 sshconfigfile=/etc/ssh/sshd_config
 
 echo
@@ -11,17 +13,24 @@ echo "Run this once logged into your newly creater server via ssh as the root us
 echo
 read -p "Are you currently root in your target machine (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
 echo
-
 echo "Confirmed. Now continuing..."
 echo
 
-read -p "1] Set machine hostname in the format: xm01.hello.world: " hostname
+read -p "1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): " -n 1 -r
 echo
-read -p "Is | $hostname | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-echo
-echo $hostname > /etc/hostname
-echo "Hostname set."
-echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	read -p "Ok, changing hostname. Set it in the format: xm01.hello.world: " hostname
+	echo
+	read -p "Is | $hostname | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+	echo
+	echo $hostname > /etc/hostname
+	echo "Hostname set."
+	echo
+else
+	echo "Skipping hostname change"
+	echo
+fi
 
 echo "2] Now setting correct locale..."
 echo
@@ -29,23 +38,61 @@ echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
 echo "Locale set."
 echo
 
-read -p "3] Now paste the ssh public key you copied from your local workstation here: " sshpubkey
+echo "3] Set SSH public key."
 echo
-read -p "Is it correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-echo
-mkdir -p /root/.ssh/
-touch /root/.ssh/authorized_keys
+if [ -f /root/.ssh/authorized_keys ]; then
+        echo "SSH Authorized Keys file found"
+        echo
+        currsshauthkeys="$(cat /root/.ssh/authorized_keys)"
+        echo "Its content is currently:"
+        echo
+        echo $currsshauthkeys
+        echo
+else
+	echo "SSH Authorized Keys file NOT found. Creating it now..."
+	echo
+	mkdir -p /root/.ssh/
+        touch /root/.ssh/authorized_keys
+fi
+chown root /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authorized_keys
-echo $sshpubkey > /root/.ssh/authorized_keys
-echo "SSH Public key set."
+read -p "Set public key now? (Y/n): " -n 1 -r
 echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	read -p "Ok, now paste the ssh public key you copied from your local workstation here: " sshpubkey
+	echo
+	read -p "Is it correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+	echo
+	chmod 600 /root/.ssh/authorized_keys
+	echo $sshpubkey > /root/.ssh/authorized_keys
+	echo "SSH Public key set."
+	echo
+else
+	echo "Skipping SSH key setting"
+	echo
+fi
 
-echo "4] Executing APT update"
+echo "4] Execute APT update"
 echo
-apt-get update
+lastaptupdate="$(date +'%s' -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
+lastaptupdatehr="$(date -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
+echo "Last update executed on $lastaptupdatehr"
 echo
-echo "Done with APT"
-echo
+currdate="$(date +'%s')"
+difference=$(($currdate-$lastaptupdate))
+if (( $difference > 86400 ));
+then
+        echo "Data is older than 24H. Updating again..."
+	echo
+	apt-get update
+	echo
+	echo "APT update complete"
+	echo
+else
+        echo "Data is current enough. Skipping update."
+	echo
+fi
 
 echo "5] Now setting SSH hardened values"
 echo
