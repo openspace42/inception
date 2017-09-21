@@ -97,10 +97,10 @@ fi
 
 echo "5] Now setting SSH hardened values"
 echo
-sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" /etc/ssh/sshd_config
+sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" $sshconfigfile
 echo "Changed 'PermitRootLogin' to 'prohibit-password'."
 echo
-sed -i "/PasswordAuthentication/c\PasswordAuthentication no" sshd_config
+sed -i "/PasswordAuthentication/c\PasswordAuthentication no" $sshconfigfile
 echo "Changed 'PasswordAuthentication' to 'no'."
 echo
 echo "Now checking current SSH port setting..."
