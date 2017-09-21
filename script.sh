@@ -171,8 +171,6 @@ else
         fi
 fi
 
-echo $sshportchanged
-
 if [ $sshportchanged = "y" ]
 then
 	read -p "Also install UFW, set 'limit 42022', and enable UFW? (Y/n): " -n 1 -r
