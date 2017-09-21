@@ -135,6 +135,7 @@ then
 				echo
 				sshportchanged=n
 			fi
+		fi
 	else
 		read -p "'Port' syntax abnormal [commented, or other]. Fix it and set it to 42022? (Y/n): " -n 1 -r
 		echo
