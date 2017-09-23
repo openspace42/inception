@@ -284,6 +284,8 @@ else
 	echo
 fi
 
+touch /root/.dfbs-run-ok
+
 echo "11] It is highly recommended to reboot the system now."
 echo
 read -p "Should we proceed? (Y/n): " -n 1 -r
