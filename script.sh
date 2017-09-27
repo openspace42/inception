@@ -296,7 +296,7 @@ then
         echo
 	echo "Thank you for using this script! Bye!"
 	echo
-	sleep 4 && reboot
+	sleep 4 && touch /root/.dfbs-run-ok-rebooted && reboot
 else
 	echo "Skipping system reboot. Remember to do so manually as soon as possible!"
 	echo
