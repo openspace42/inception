@@ -1,4 +1,4 @@
-# ubuntu_first-run-setup
+# Debian First Boot Setup
 
 ## New: for automated script check out [script.sh](https://github.com/nikksno/ubuntu_first-run-setup/blob/master/script.sh)
 
