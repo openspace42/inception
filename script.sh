@@ -284,9 +284,9 @@ else
 	echo
 fi
 
-touch /root/.dfbs-run-ok
-
 echo "11] It is highly recommended to reboot the system now."
+echo
+echo "If you don't reboot now, you won't be able to run further scripts that depend on the completion of this one!"
 echo
 read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
@@ -296,7 +296,7 @@ then
         echo
 	echo "Thank you for using this script! Bye!"
 	echo
-	sleep 4 && touch /root/.dfbs-run-ok-rebooted && reboot
+	sleep 4 && touch /root/.dfbs-run-ok && reboot
 else
 	echo "Skipping system reboot. Remember to do so manually as soon as possible!"
 	echo
