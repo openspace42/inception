@@ -7,7 +7,7 @@ currusers="$(cat /etc/passwd | cut -d: -f 1,3,6 | grep "[1-9][0-9][0-9][0-9]" | 
 
 echo
 
-echo "ubuntu_first-run-setup by nikksno [https://github.com/nikksno/ubuntu_first-run-setup]"
+echo "Debian First Boot Setup by nikksno [https://github.com/nikksno/Debian-First-Boot-Setup/]"
 echo
 
 echo "Run this once logged into your newly creater server via ssh as the root user"
