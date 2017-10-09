@@ -235,13 +235,13 @@ echo
 echo "Ok, continuing..."
 echo
 
-read -p "6] Now setting timezone. Do so at the next screen. Press enter to continue"
+read -p "7] Now setting timezone. Do so at the next screen. Press enter to continue"
 echo
 
 dpkg-reconfigure tzdata
 echo
 
-echo "7] Create the non-root user."
+echo "8] Create the non-root user."
 echo
 echo "The current non-root users are:"
 echo
@@ -269,13 +269,13 @@ else
 	echo
 fi
 
-echo "8] Now unsetting root password"
+echo "9] Now unsetting root password"
 echo
 sudo passwd -dl root
 echo "Root password unset"
 echo
 
-echo "9] Install recommended packages: sudo fail2ban ufw ntp git haveged glances"
+echo "10] Install recommended packages: sudo fail2ban ufw ntp git haveged glances"
 echo
 read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
@@ -290,7 +290,7 @@ else
 	echo
 fi
 
-echo "10] It is highly recommended to upgrade all system packages now."
+echo "11] It is highly recommended to upgrade all system packages now."
 echo
 read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
@@ -305,7 +305,7 @@ else
 	echo
 fi
 
-echo "11] It is highly recommended to reboot the system now."
+echo "12] It is highly recommended to reboot the system now."
 echo
 echo "If you don't reboot now, you won't be able to run further scripts that depend on the completion of this one!"
 echo
