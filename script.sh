@@ -1,5 +1,8 @@
 #!/bin/bash
 
+installdir="/root/os-dfbs"
+mkdir -p $installdir
+
 currhostname="$(cat /etc/hostname)"
 sshauthkeyfile=/root/.ssh/authorized_keys
 sshconfigfile=/etc/ssh/sshd_config
@@ -118,83 +121,99 @@ then
 		then
 			echo "SSH port already set to 42022."
 			echo
-			sshportchanged=y
+			sshport=42022
 		else
-			read -p "SSH port NOT set to 42022. Change it? (Y/n): " -n 1 -r
+			currsshport="$(grep '^ *Port *' /etc/ssh/sshd_config | sed 's|Port ||g')"
+			echo "SSH port currently set to $currsshport"
+			echo
+			read -p "Change it to 42022? (Y/n): " -n 1 -r
 			echo
 			if [[ ! $REPLY =~ ^[Nn]$ ]]
 			then
 				echo "Ok, changing Port to 42022"
 				echo
 				sed -i "/Port /c\Port 42022" $sshconfigfile
-				sshportchanged=y
 				echo "Port changed to 42022"
 				echo
+				sshport=42022
 			else
-				echo "Not changing SSHD Port"
+				echo "Leaving SSH port set to $currsshport"
 				echo
-				sshportchanged=n
+				sshport=$currsshport
 			fi
 		fi
 	else
-		read -p "'Port' syntax abnormal [commented, or other]. Fix it and set it to 42022? (Y/n): " -n 1 -r
+		read -p "'Port' syntax abnormal [commented, or other]. Fixing it now. Also set it to 42022? (Y/n): " -n 1 -r
 		echo
 		if [[ ! $REPLY =~ ^[Nn]$ ]]
                 then
                         echo "Ok, fixing syntax and setting 'Port' to 42022"
                         echo
                         sed -i "/Port /c\Port 42022" $sshconfigfile
-			sshportchanged=y
 			echo "Line re-inserted with Port set to 42022"
 			echo
+			sshport=42022			
 		else
-			echo "Leaving Port syntax abnormal [commented, or other]."
+			echo "Ok, fixing syntax but leaving 'Port' set to 22 [standard]"
+                        echo
+                        sed -i "/Port /c\Port 22" $sshconfigfile
+			echo "Line re-inserted with Port set to 22"
 			echo
-			sshportchanged=n
+			sshport=22			
 	        fi
 	fi
 else
-	read -p "'Port' line not found. Add it and set it to 42022? (Y/n): " -n 1 -r
+	read -p "'Port' line not found. Add it now. Also set it to 42022? (Y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]
         then
                 echo "Ok, adding 'Port' line and setting it to 42022"
                 echo
 		sed -i '1iPort 42022' $sshconfigfile
-                sshportchanged=y
                 echo "Line added with 'Port' set to 42022"
                 echo
+		sshport=42022
         else
-                echo "Not adding 'Port' line."
+                echo "Ok, adding 'Port' line but leaving it set to 22 [standard]"
                 echo
-                sshportchanged=n
+		sed -i '1iPort 22' $sshconfigfile
+                echo "Line added with 'Port' set to 22"
+                echo
+		sshport=22		
         fi
 fi
 
-if [ $sshportchanged = "y" ]
+touch $installdir/ssh-port
+echo $sshport > $installdir/ssh-port
+
+read -p "6] Also install UFW, set 'limit $sshport', and enable UFW? (Y/n): " -n 1 -r
+echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	read -p "Also install UFW, set 'limit 42022', and enable UFW? (Y/n): " -n 1 -r
+	echo "Installing UFW"
 	echo
-	if [[ ! $REPLY =~ ^[Nn]$ ]]
+	apt-get install ufw
+	echo
+	echo "Allowing Port $sshport"
+	echo
+	ufw limit $sshport
+	echo
+	if [ ! $sshport = 22 ]
 	then
-		echo "Installing UFW"
-		echo
-		apt-get install ufw
-		echo
-		echo "Allowing Ports 42022 and 22 [for current session] in 'limit' mode and enabling UFW"
-		echo
-		ufw limit 42022
+		echo "Also setting 'limit 22' [for current session]"
 		echo
 		ufw limit 22
 		echo
-		ufw enable
-		echo
-		echo "All done with UFW"
-		echo
-	else
-		echo "Not changing firewall settings. Remember to do so manually right away!"
-		echo
 	fi
+	echo "Enabling UFW"
+	echo
+	ufw enable
+	echo
+	echo "All done with UFW"
+	echo
+else
+	echo "Skipping changing firewall settings. Remember to do so manually right away!"
+	echo
 fi
 
 echo "Restarting SSHD"
@@ -296,7 +315,7 @@ then
         echo
 	echo "Thank you for using this script! Bye!"
 	echo
-	sleep 4 && touch /root/.dfbs-run-ok && reboot
+	sleep 4 && touch $installdir/run-ok && reboot
 else
 	echo "Skipping system reboot. Remember to do so manually as soon as possible!"
 	echo
