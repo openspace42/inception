@@ -1,6 +1,6 @@
 #!/bin/bash
 
-installdir="/root/os-dfbs"
+installdir="/root/os-dfbs" # DO NOT CHANGE!
 mkdir -p $installdir
 
 currhostname="$(cat /etc/hostname)"
@@ -154,6 +154,7 @@ then
 			echo
 			sshport=42022			
 		else
+			echo
 			echo "Ok, fixing syntax but leaving 'Port' set to 22 [standard]"
                         echo
                         sed -i "/Port /c\Port 22" $sshconfigfile
@@ -174,6 +175,7 @@ else
                 echo
 		sshport=42022
         else
+		echo
                 echo "Ok, adding 'Port' line but leaving it set to 22 [standard]"
                 echo
 		sed -i '1iPort 22' $sshconfigfile
