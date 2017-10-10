@@ -100,8 +100,8 @@ fi
 
 echo "5] Now setting SSH hardened values"
 echo
-sed -i "/PermitRootLogin/c\PermitRootLogin prohibit-password" $sshconfigfile
-echo "Changed 'PermitRootLogin' to 'prohibit-password'."
+sed -i "/PermitRootLogin/c\PermitRootLogin without-password" $sshconfigfile
+echo "Changed 'PermitRootLogin' to 'without-password'."
 echo
 sed -i "/PasswordAuthentication/c\PasswordAuthentication no" $sshconfigfile
 echo "Changed 'PasswordAuthentication' to 'no'."
