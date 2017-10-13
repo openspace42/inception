@@ -275,7 +275,7 @@ sudo passwd -dl root
 echo "Root password unset"
 echo
 
-echo "10] Install recommended packages: sudo fail2ban ufw ntp git haveged glances"
+echo "10] Install recommended packages: sudo fail2ban ufw ntp git haveged glances htop"
 echo
 read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
