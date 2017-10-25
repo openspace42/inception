@@ -10,15 +10,19 @@ currusers="$(cat /etc/passwd | cut -d: -f 1,3,6 | grep "[1-9][0-9][0-9][0-9]" | 
 
 echo
 
-echo "Debian First Boot Setup by nikksno [https://github.com/nikksno/Debian-First-Boot-Setup/]"
+echo "Debian First Boot Setup by Nk [openspace] [https://github.com/openspace42/Debian-First-Boot-Setup/]"
 echo
 
 echo "Run this once logged into your newly creater server via ssh as the root user"
 echo
-read -p "Are you currently root in your target machine (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-echo
-echo "Confirmed. Now continuing..."
-echo
+
+if [[ $EUID -ne 0 ]]; then
+	echo "This script must be run as root. Run it as:"
+	echo
+	echo "sudo bash Debian-First-Boot-Setup/script.sh"
+	echo
+	exit
+fi
 
 read -p "1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): " -n 1 -r
 echo
