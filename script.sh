@@ -79,24 +79,25 @@ fi
 
 echo "4] Execute APT update"
 echo
-lastaptupdate="$(date +'%s' -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
-lastaptupdatehr="$(date -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
-echo "Last update executed on $lastaptupdatehr"
-echo
-currdate="$(date +'%s')"
-difference=$(($currdate-$lastaptupdate))
-if (( $difference > 86400 ));
-then
-        echo "Data is older than 24H. Updating again..."
-	echo
-	apt-get update
-	echo
-	echo "APT update complete"
-	echo
-else
-        echo "Data is current enough. Skipping update."
-	echo
-fi
+#lastaptupdate="$(date +'%s' -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
+#lastaptupdatehr="$(date -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
+#echo "Last update executed on $lastaptupdatehr"
+#echo
+#currdate="$(date +'%s')"
+#difference=$(($currdate-$lastaptupdate))
+#if (( $difference > 86400 ));
+#then
+#        echo "Data is older than 24H. Updating again..."
+#	echo
+#	apt-get update
+#	echo
+#	echo "APT update complete"
+#	echo
+#else
+#        echo "Data is current enough. Skipping update."
+#	echo
+#fi
+apt-get update
 
 echo "5] Now setting SSH hardened values"
 echo
