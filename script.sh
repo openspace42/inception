@@ -286,7 +286,7 @@ read -p "Should we proceed? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	apt-get -y install sudo fail2ban ufw ntp git haveged glances
+	apt-get -y install sudo fail2ban ufw ntp git haveged glances htop
 	echo
 	echo "Done with APT install"
 	echo
