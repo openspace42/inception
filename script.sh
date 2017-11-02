@@ -3,6 +3,11 @@
 installdir="/root/os-dfbs" # DO NOT CHANGE!
 mkdir -p $installdir
 
+r=`tput setaf 1`
+g=`tput setaf 2`
+x=`tput sgr0`
+b=`tput bold`
+
 currhostname="$(cat /etc/hostname)"
 sshauthkeyfile=/root/.ssh/authorized_keys
 sshconfigfile=/etc/ssh/sshd_config
@@ -157,7 +162,7 @@ then
                         sed -i "/Port /c\Port 42022" $sshconfigfile
 			echo "Line re-inserted with Port set to 42022"
 			echo
-			sshport=42022			
+			sshport=42022
 		else
 			echo
 			echo "Ok, fixing syntax but leaving 'Port' set to 22 [standard]"
@@ -165,7 +170,7 @@ then
                         sed -i "/Port /c\Port 22" $sshconfigfile
 			echo "Line re-inserted with Port set to 22"
 			echo
-			sshport=22			
+			sshport=22
 	        fi
 	fi
 else
@@ -186,7 +191,7 @@ else
 		sed -i '1iPort 22' $sshconfigfile
                 echo "Line added with 'Port' set to 22"
                 echo
-		sshport=22		
+		sshport=22
         fi
 fi
 
@@ -214,7 +219,7 @@ then
 	fi
 	echo "Enabling UFW"
 	echo
-	ufw enable
+	ufw  --force enable
 	echo
 	echo "All done with UFW"
 	echo
