@@ -45,7 +45,7 @@ fi
 
 
 
-read -p "1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): " -n 1 -r
+read -p "${b}1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): ${x}" -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
@@ -97,25 +97,25 @@ then
 		done
 	done
 	echo $hostname > /etc/hostname
-	echo "${b}New hostname set to | $hostname |${x}"
+	echo "${b}New hostname set to | $hostname |.${x}"
 	echo
 else
 	echo
-	echo "Leaving hostname set to | $currhostname |"
+	echo "${b}Leaving hostname set to | $currhostname |.${x}"
 	echo
 fi
 
 
 
-echo "2] Now setting correct locale..."
+echo "${b}2] Now setting correct locale...${x}"
 echo
 echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
-echo "Locale set."
+echo "${b}Locale set.${x}"
 echo
 
 
 
-echo "3] Set your SSH public key."
+echo "${b}3] Set your SSH public key...${x}"
 echo
 if [ -f /root/.ssh/authorized_keys ]; then
         echo "SSH Authorized Keys file found"
@@ -436,14 +436,7 @@ echo
 
 echo "${b}12] Rebooting system now to complete installation...${x}"
 echo
+echo "${g}${b}All done!${x}"
+echo
 rm -r $sourcedir
 sleep 4 && touch $installdir/run-ok && reboot
-
-
-
-echo "${b}${b}All done!${x}"
-echo
-
-
-
-exit
