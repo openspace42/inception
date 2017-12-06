@@ -425,4 +425,5 @@ echo
 
 echo "${b}12] Rebooting system now to complete installation...${x}"
 echo
+rm -r $sourcedir
 sleep 4 && touch $installdir/run-ok && reboot
