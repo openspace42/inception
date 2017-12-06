@@ -34,6 +34,13 @@ then
 	exit
 fi
 
+# Delete old installdir
+
+if [ -d /root/os-dfbs ]
+then
+	rm -r /root/os-dfbs
+fi
+
 ################################################################################
 
 
