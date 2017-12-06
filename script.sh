@@ -1,55 +1,111 @@
 #!/bin/bash
 
-installdir="/root/os-dfbs" # DO NOT CHANGE!
-mkdir -p $installdir
+# Don't change | No trailing slash
+projname="Debian-First-Boot-Setup"
+sourcedir=/root/$projname
+basedir=/root/openspace42
+installdir=$basedir/DFBS
 
-r=`tput setaf 1`
-g=`tput setaf 2`
-x=`tput sgr0`
-b=`tput bold`
+mkdir -p $installdir
 
 currhostname="$(cat /etc/hostname)"
 sshauthkeyfile=/root/.ssh/authorized_keys
 sshconfigfile=/etc/ssh/sshd_config
 currusers="$(cat /etc/passwd | cut -d: -f 1,3,6 | grep "[1-9][0-9][0-9][0-9]" | grep "/home" | cut -d: -f1)"
 
+r=`tput setaf 1`
+g=`tput setaf 2`
+l=`tput setaf 4`
+m=`tput setaf 5`
+x=`tput sgr0`
+b=`tput bold`
+
 echo
 
-echo "Debian First Boot Setup by Nk [openspace] [https://github.com/openspace42/Debian-First-Boot-Setup/]"
+echo "${b}Debian First Boot Setup by Nk [openspace].${x}"
 echo
 
-echo "Run this once logged into your newly creater server via ssh as the root user"
-echo
-
-if [[ $EUID -ne 0 ]]; then
+if [[ $EUID -ne 0 ]]
+then
 	echo "This script must be run as root. Run it as:"
 	echo
-	echo "sudo bash Debian-First-Boot-Setup/script.sh"
+	echo "sudo bash $sourcedir"
 	echo
 	exit
 fi
+
+################################################################################
+
+
 
 read -p "1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	read -p "Ok, changing hostname. Set it in the format: xm01.hello.world: " hostname
-	echo
-	read -p "Is | $hostname | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-	echo
+	defined=n
+	until [ $defined = "y" ]
+	do
+		hostname=""
+		until [ ! $hostname = "" ]
+		do
+			read -p "${b}Ok, changing hostname. Set it in the format: xm01.hello.world:  ${x}" hostname
+			echo
+		done
+		valid=n
+		until [ $valid = "y" ]
+		do
+			read -n 1 -p "${b}Is | $hostname | correct? (Y/n/e[xit]) ${x}" answer;
+			case $answer in
+			"")
+				echo
+				valid=y
+				defined=y
+				;;
+			y)
+				echo -e "\n"
+				valid=y
+				defined=y
+				;;
+			n)
+				echo -e "\n"
+				echo "${b}Ok, then please try again...${x}"
+				echo
+				valid=y
+				defined=n
+				;;
+			e)
+				echo -e "\n"
+				echo "${b}Exiting...${x}"
+				echo
+				exit
+				;;
+			*)
+				echo -e "\n"
+				echo "${r}${b}Invalid option. Retry...${x}"
+				echo
+				valid=n
+				defined=n
+				;;
+			esac
+		done
+	done
 	echo $hostname > /etc/hostname
-	echo "Hostname set."
+	echo "${b}New hostname set to | $hostname |${x}"
 	echo
 else
-	echo "Skipping hostname change"
+	echo "Leaving hostname set to | $currhostname |"
 	echo
 fi
+
+
 
 echo "2] Now setting correct locale..."
 echo
 echo "LC_ALL=en_US.UTF-8" > /etc/default/locale
 echo "Locale set."
 echo
+
+
 
 echo "3] Set SSH public key."
 echo
@@ -73,10 +129,53 @@ read -p "Set public key now? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	read -p "Ok, now paste the ssh public key you copied from your local workstation here: " sshpubkey
-	echo
-	read -p "Is it correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-	echo
+	defined=n
+	until [ $defined = "y" ]
+	do
+		sshpubkey=""
+		until [ ! $sshpubkey = "" ]
+		do
+			read -p "${b}Ok, now paste the ssh public key you copied from your local workstation here:  ${x}" sshpubkey
+			echo
+		done
+		valid=n
+		until [ $valid = "y" ]
+		do
+			read -n 1 -p "${b}Is it correct? (Y/n/e[xit]) ${x}" answer;
+			case $answer in
+			"")
+				echo
+				valid=y
+				defined=y
+				;;
+			y)
+				echo -e "\n"
+				valid=y
+				defined=y
+				;;
+			n)
+				echo -e "\n"
+				echo "${b}Ok, then please try again...${x}"
+				echo
+				valid=y
+				defined=n
+				;;
+			e)
+				echo -e "\n"
+				echo "${b}Exiting...${x}"
+				echo
+				exit
+				;;
+			*)
+				echo -e "\n"
+				echo "${r}${b}Invalid option. Retry...${x}"
+				echo
+				valid=n
+				defined=n
+				;;
+			esac
+		done
+	done
 	chmod 600 /root/.ssh/authorized_keys
 	echo $sshpubkey > /root/.ssh/authorized_keys
 	echo "SSH Public key set."
@@ -86,27 +185,13 @@ else
 	echo
 fi
 
+
+
 echo "4] Execute APT update"
 echo
-#lastaptupdate="$(date +'%s' -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
-#lastaptupdatehr="$(date -d "$(ls -l /var/cache/apt/pkgcache.bin | cut -d' ' -f6,7,8)")"
-#echo "Last update executed on $lastaptupdatehr"
-#echo
-#currdate="$(date +'%s')"
-#difference=$(($currdate-$lastaptupdate))
-#if (( $difference > 86400 ));
-#then
-#        echo "Data is older than 24H. Updating again..."
-#	echo
-#	apt-get update
-#	echo
-#	echo "APT update complete"
-#	echo
-#else
-#        echo "Data is current enough. Skipping update."
-#	echo
-#fi
 apt-get update
+
+
 
 echo "5] Now setting SSH hardened values"
 echo
@@ -198,62 +283,57 @@ fi
 touch $installdir/ssh-port
 echo $sshport > $installdir/ssh-port
 
-read -p "6] Also install UFW, set 'limit $sshport', and enable UFW? (Y/n): " -n 1 -r
+
+
+echo "${b}6] Now installing UFW, setting 'limit $sshport', and enabling UFW.${x}"
 echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
+apt-get -y install ufw
+echo "Allowing Port $sshport"
+echo
+ufw limit $sshport
+echo
+if [ ! $sshport = 22 ]
 then
-	echo "Installing UFW"
+	echo "Also setting 'limit 22' [for current session]"
 	echo
-	apt-get install ufw
-	echo
-	echo "Allowing Port $sshport"
-	echo
-	ufw limit $sshport
-	echo
-	if [ ! $sshport = 22 ]
-	then
-		echo "Also setting 'limit 22' [for current session]"
-		echo
-		ufw limit 22
-		echo
-	fi
-	echo "Enabling UFW"
-	echo
-	ufw  --force enable
-	echo
-	echo "All done with UFW"
-	echo
-else
-	echo "Skipping changing firewall settings. Remember to do so manually right away!"
+	ufw limit 22
 	echo
 fi
+echo "Enabling UFW"
+echo
+ufw  --force enable
+echo
+echo "All done with UFW"
+echo
 
 echo "Restarting SSHD"
 echo
-
 service ssh restart
 echo
+
+
 
 echo "Now, on your workstation, open a new terminal and open a new SSH session to this server with the specified SSH key and on the correct port."
 echo
 echo "If that works, close that session, come back to this one, and continue running this script, otherwise start over."
 echo
-
 read -p "Has the new SSH session worked? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
 echo
-
 echo "Ok, continuing..."
 echo
 
+
+
 read -p "7] Now setting timezone. Do so at the next screen. Press enter to continue"
 echo
-
 dpkg-reconfigure tzdata
 echo
 
-echo "8] Create the non-root user."
+
+
+echo "${b}8] Create a user on this machine other than root.${x}"
 echo
-echo "The current non-root users are:"
+echo "${b}The current non-root full users with a home directory are:${x}"
 echo
 echo $currusers
 echo
@@ -261,23 +341,61 @@ read -p "Add non-root user now? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
-	read -p "Ok, adding user. Specify the new user's username: " username
-	echo
-	read -p "Is | $username | correct? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
-	echo
-	echo "Now enter new user's password when requested..."
-	echo
-	adduser --gecos "" $username
-	echo
-	echo "Now allowing newly created user to 'sudo'"
-	echo
-	usermod -aG sudo $username
-	echo "Sudo set"
-	echo
+	defined=n
+	until [ $defined = "y" ]
+	do
+		newuser=""
+		until [ ! $newuser = "" ]
+		do
+			read -p "${b}Ok, adding user now. Specify the new user's username: ${x}" newuser
+			echo
+		done
+		valid=n
+		until [ $valid = "y" ]
+		do
+			read -n 1 -p "${b}Is | $newuser | correct? (Y/n/e[xit]) ${x}" answer;
+			case $answer in
+			"")
+				echo
+				valid=y
+				defined=y
+				;;
+			y)
+				echo -e "\n"
+				valid=y
+				defined=y
+				;;
+			n)
+				echo -e "\n"
+				echo "${b}Ok, then please try again...${x}"
+				echo
+				valid=y
+				defined=n
+				;;
+			e)
+				echo -e "\n"
+	        		echo "${b}Exiting...${x}"
+	        		echo
+	        		exit
+	        		;;
+			*)
+				echo -e "\n"
+				echo "${r}${b}Invalid option. Retry...${x}"
+	        		echo
+				valid=n
+			defined=n
+		        ;;
+			esac
+		done
+	done
+	adduser --disabled-password --gecos "" $newuser
+	usermod -aG sudo $newuser
 else
-	echo "Skipping non-root user creation"
+	echo "${b}Skipping non-root user creation.${x}"
 	echo
 fi
+
+
 
 echo "9] Now unsetting root password"
 echo
@@ -285,54 +403,26 @@ sudo passwd -dl root
 echo "Root password unset"
 echo
 
-echo "10] Install recommended packages: sudo fail2ban ufw ntp git haveged glances htop"
-echo
-read -p "Should we proceed? (Y/n): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
-then
-	apt-get -y install sudo fail2ban ufw ntp git haveged glances htop
-	echo
-	echo "Done with APT install"
-	echo
-else
-	echo "Skipping packages install"
-	echo
-fi
 
-echo "11] It is highly recommended to upgrade all system packages now."
-echo
-read -p "Should we proceed? (Y/n): " -n 1 -r
-echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
-then
-	apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y autoremove
-        echo
-        echo "Done with APT upgrades"
-        echo
-else
-	echo "Skipping APT upgrades"
-	echo
-fi
 
-echo "12] It is highly recommended to reboot the system now."
+echo "${b}10] Now installing other packages: sudo fail2ban ntp git haveged glances htop pwgen...${x}"
 echo
-echo "If you don't reboot now, you won't be able to run further scripts that depend on the completion of this one!"
+apt-get -y install sudo fail2ban ntp git haveged glances htop pwgen
 echo
-read -p "Should we proceed? (Y/n): " -n 1 -r
+echo "${b}Done with APT install.${x}"
 echo
-if [[ ! $REPLY =~ ^[Nn]$ ]]
-then
-	echo "REBOOTING SYSTEM NOW"
-        echo
-	echo "Thank you for using this script! Bye!"
-	echo
-	sleep 4 && touch $installdir/run-ok && reboot
-else
-	echo "Skipping system reboot. Remember to do so manually as soon as possible!"
-	echo
-	echo "Thank you for using this script! Bye!"
-	echo
-fi
 
-exit
+
+
+echo "${b}11] Now upgrading all system packages...${x}"
+echo
+apt-get -y upgrade && apt-get -y dist-upgrade && apt-get -y autoremove
+echo
+echo "${b}Done with APT upgrades.${x}"
+echo
+
+
+
+echo "${b}12] Rebooting system now to complete installation...${x}"
+echo
+sleep 4 && touch $installdir/run-ok && reboot
