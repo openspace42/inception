@@ -438,5 +438,4 @@ echo "${b}12] Rebooting system now to complete installation...${x}"
 echo
 echo "${g}${b}All done!${x}"
 echo
-rm -r $sourcedir
-sleep 4 && touch $installdir/run-ok && reboot
+sleep 4 && touch $installdir/run-ok && rm -r $sourcedir && reboot
