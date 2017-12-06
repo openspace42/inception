@@ -93,6 +93,7 @@ then
 	echo "${b}New hostname set to | $hostname |${x}"
 	echo
 else
+	echo
 	echo "Leaving hostname set to | $currhostname |"
 	echo
 fi
@@ -107,7 +108,7 @@ echo
 
 
 
-echo "3] Set SSH public key."
+echo "3] Set your SSH public key."
 echo
 if [ -f /root/.ssh/authorized_keys ]; then
         echo "SSH Authorized Keys file found"
@@ -181,19 +182,21 @@ then
 	echo "SSH Public key set."
 	echo
 else
+	echo
 	echo "Skipping SSH key setting"
 	echo
 fi
 
 
 
-echo "4] Execute APT update"
+echo "${b}4] Now executing APT update...${x}"
 echo
 apt-get update
+echo
 
 
 
-echo "5] Now setting SSH hardened values"
+echo "${b}5] Now setting SSH hardened values...${x}"
 echo
 sed -i "/PermitRootLogin/c\PermitRootLogin without-password" $sshconfigfile
 echo "Changed 'PermitRootLogin' to 'without-password'."
@@ -306,10 +309,9 @@ echo
 echo "All done with UFW"
 echo
 
-echo "Restarting SSHD"
+echo "${b}Restarting SSHD...${x}"
 echo
 service ssh restart
-echo
 
 
 
@@ -391,16 +393,18 @@ then
 	adduser --disabled-password --gecos "" $newuser
 	usermod -aG sudo $newuser
 else
+	echo
 	echo "${b}Skipping non-root user creation.${x}"
 	echo
 fi
 
 
 
-echo "9] Now unsetting root password"
+echo "${b}9] Now unsetting root password...${x}"
 echo
 sudo passwd -dl root
-echo "Root password unset"
+echo
+echo "${b}Root password unset.${x}"
 echo
 
 
@@ -427,3 +431,12 @@ echo "${b}12] Rebooting system now to complete installation...${x}"
 echo
 rm -r $sourcedir
 sleep 4 && touch $installdir/run-ok && reboot
+
+
+
+echo "${b}${b}All done!${x}"
+echo
+
+
+
+exit
