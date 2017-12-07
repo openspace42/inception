@@ -1,5 +1,8 @@
 #!/bin/bash
 
+set -e
+set -u
+
 # Don't change | No trailing slash
 projname="Debian-First-Boot-Setup"
 sourcedir=/root/$projname
