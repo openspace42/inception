@@ -141,7 +141,7 @@ then
 	until [ $defined = "y" ]
 	do
 		sshpubkey=""
-		until [ ! $sshpubkey = "" ]
+		until [ ! "$sshpubkey" = "" ]
 		do
 			read -p "${b}Ok, now paste the ssh public key you copied from your local workstation here:  ${x}" sshpubkey
 			echo
@@ -185,7 +185,7 @@ then
 		done
 	done
 	chmod 600 /root/.ssh/authorized_keys
-	echo $sshpubkey > /root/.ssh/authorized_keys
+	echo "$sshpubkey" > /root/.ssh/authorized_keys
 	echo "SSH Public key set."
 	echo
 else
