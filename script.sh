@@ -58,7 +58,7 @@ then
 		hostname=""
 		until [ ! $hostname = "" ]
 		do
-			read -p "${b}Ok, changing hostname. Set it in the format: xm01.hello.world:  ${x}" hostname
+			read -p "${b}Ok, changing hostname. Set it in the format: xm01.hello.world: ${x}" hostname
 			echo
 		done
 		valid=n
@@ -146,7 +146,7 @@ then
 		sshpubkey=""
 		until [ ! "$sshpubkey" = "" ]
 		do
-			read -p "${b}Ok, now paste the ssh public key you copied from your local workstation here:  ${x}" sshpubkey
+			read -p "${b}Ok, now paste the ssh public key you copied from your local workstation here: ${x}" sshpubkey
 			echo
 		done
 		valid=n
@@ -419,9 +419,31 @@ echo
 
 
 
-echo "${b}10] Now installing other packages: sudo fail2ban ntp git haveged glances htop pwgen...${x}"
+echo "${b}10] Now installing other packages...${x}"
 echo
-apt-get -y install sudo fail2ban ntp git haveged glances htop pwgen
+
+distro="$(lsb_release --id | cut -f2)"
+
+if [ $distro = "Ubuntu" ]
+then
+
+	echo "${g}${b}Detected Ubuntu distro. Proceeding with full install...${x}"
+	echo
+
+	hostname="$(cat /etc/hostname)"
+	debconf-set-selections <<< "postfix postfix/mailname string $hostname"
+	debconf-set-selections <<< "postfix postfix/main_mailer_type string 'Internet Site'"
+	apt-get install -y mailutils
+	/etc/init.d/postfix reload
+
+else
+
+	echo "${r}${b}Detected NON-Ubuntu distro [mail notifications might not work]. Proceeding...${x}"
+	echo
+
+fi
+
+apt-get -y install sudo software-properties-common curl ntp haveged cronic fail2ban git glances htop pwgen pv bc
 echo
 echo "${b}Done with APT install.${x}"
 echo
