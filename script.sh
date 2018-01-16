@@ -7,7 +7,7 @@ set -u
 projname="Debian-First-Boot-Setup"
 sourcedir=/root/$projname
 basedir=/root/openspace42
-installdir=$basedir/DFBS
+installdir=$basedir/dfbs
 
 mkdir -p $installdir
 
