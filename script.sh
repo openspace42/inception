@@ -443,7 +443,7 @@ else
 
 fi
 
-apt-get -y install sudo software-properties-common curl ntp haveged cronic fail2ban git glances htop pwgen pv bc
+apt-get -y install sudo software-properties-common curl ntp dnsutils haveged cronic fail2ban git glances htop pwgen pv bc
 echo
 echo "${b}Done with APT install.${x}"
 echo
