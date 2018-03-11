@@ -402,6 +402,7 @@ then
 	done
 	adduser --disabled-password --gecos "" $newuser
 	usermod -aG sudo $newuser
+	echo
 else
 	echo
 	echo "${b}Skipping non-root user creation.${x}"
