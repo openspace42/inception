@@ -4,10 +4,10 @@ set -e
 set -u
 
 # Don't change | No trailing slash
-projname="Debian-First-Boot-Setup"
+projname="inception"
 sourcedir=/root/$projname
 basedir=/root/openspace42
-installdir=$basedir/dfbs
+installdir=$basedir/inception
 
 mkdir -p $installdir
 
@@ -35,13 +35,6 @@ then
 	echo "sudo bash $sourcedir"
 	echo
 	exit
-fi
-
-# Delete old installdir
-
-if [ -d /root/os-dfbs ]
-then
-	rm -r /root/os-dfbs
 fi
 
 ################################################################################
