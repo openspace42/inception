@@ -1,51 +1,17 @@
-# Debian First Boot Setup
+# inception
 
-## New: for automated script check out [script.sh](https://github.com/nikksno/ubuntu_first-run-setup/blob/master/script.sh)
+## What it is and what it does
 
-00. log in to your newly creater server via ssh as the root user
+This is our reference first boot script for any Debian / Ubuntu server and will perform the following actions:
 
-01. nano /etc/hostname # once inside nano write:
-```
-	xx01.hello.world
-```
-02. nano /etc/default/locale # once inside nano delete everything and add this:
-```
-	LC_ALL=en_US.UTF-8
-```
-03.01. cd && mkdir -p .ssh
-
-03.02. nano .ssh/authorized_keys # once inside nano paste the ssh public key you copied from your local workstation
-
-03.03. nano /etc/ssh/sshd_config
-```
-	Port 42022
-	PermitRootLogin without-password
-	PasswordAuthentication no
-```
-04. service ssh restart
-
-05. [open new shell and] ssh -p 42022 -i .ssh/privkey-name-here root@xx01.hello.world [and if it works exit the old shell. Proceed on the new shell]
-
-06. reboot
-
-07. dpkg-reconfigure tzdata
-
-08. apt update && apt install screen
-
-09. screen # all commands from now are run from inside screen
-
-10. apt -y upgrade && apt -y dist-upgrade && apt-get -y autoremove && reboot
-
-11.01.  adduser <username> # insert strong password twice at prompt and return all empty values
-
-11.02.  usermod -aG sudo username
-
-11.03.  sudo passwd -dl root
-
-12. reboot
-
-13. apt -y install sudo fail2ban ufw ntp git haveged glances
-
-14. ufw limit 42022 && ufw enable
-
-15. Done!
+01. Prompt you to update the machine hostname
+02. Set your default locale to something that actually works
+03. Harden your SSH config by:
+03.01. Prompting you to add your SSH public key and disable password authentication for secure key-based remote login
+03.02. Prompting you to change the SSH listening port to 42022
+03.04. Adding whichever port you choose to the UFW allowed ports, install and enable UFW
+04. Prompt you to set the correct timezone for the machine
+05. Unset the default root password just in case
+06. Create a non-root user and allowing it to sudo
+07. Install essential system utilities that you'll love
+08. Performing a full APT update / upgrade / dist-upgrade / autoremove
