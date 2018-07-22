@@ -391,17 +391,17 @@ then
 	done
 	adduser --disabled-password --gecos "" $newuser
 	usermod -aG sudo $newuser
+	echo
 	read -rp "${b}Also generate random password for | $newuser |? (Y/n): ${x}" -n 1 -r
 	echo
 	if [[ ! $REPLY =~ ^[Nn]$ ]]
 	then
 		non_root_user_pw="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 24 | head -n 1)"
-		echo "${b}Ok, assigning user | $newuser | the following password:${x}"
+		echo "${b}Ok. Assigning user | $newuser | the following password:${x}"
 		echo
 		echo "${b} | ${g}${non_root_user_pw}${x}${b} |${x}"
 		echo
 		echo "${newuser}:${non_root_user_pw}" | chpasswd
-		echo
 		read -rp "${b}Press enter to continue...${x}"
 		echo
 	fi
@@ -417,12 +417,11 @@ echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
 	root_user_pw="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 24 | head -n 1)"
-	echo "${b}Ok, assigning user | root | the following password:${x}"
+	echo "${b}Ok. Assigning user | root | the following password:${x}"
 	echo
 	echo "${b} | ${g}${root_user_pw}${x}${b} |${x}"
 	echo
-	echo "root:${_root_user_pw}" | chpasswd
-	echo
+	echo "root:${root_user_pw}" | chpasswd
 	read -rp "${b}Press enter to continue...${x}"
 	echo
 else
