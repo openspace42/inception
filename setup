@@ -1,7 +1,6 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-set -e
-set -u
+set -eu
 
 # Don't change | No trailing slash
 projname="inception"
@@ -38,7 +37,7 @@ fi
 
 
 
-read -p "${b}1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): ${x}" -n 1 -r
+read -rp "${b}1] Set machine hostname. It's currently | $currhostname |. Change it? (Y/n): ${x}" -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
@@ -48,7 +47,7 @@ then
 		hostname=""
 		until [ ! $hostname = "" ]
 		do
-			read -p "${b}Ok, changing hostname. Set it in the format: xm01.hello.world: ${x}" hostname
+			read -rp "${b}Ok, changing hostname. Set it in the format: xm01.hello.world: ${x}" hostname
 			echo
 		done
 		valid=n
@@ -126,7 +125,7 @@ else
 fi
 chown root /root/.ssh/authorized_keys
 chmod 600 /root/.ssh/authorized_keys
-read -p "Set public key now? (Y/n): " -n 1 -r
+read -rp "Set public key now? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
@@ -136,7 +135,7 @@ then
 		sshpubkey=""
 		until [ ! "$sshpubkey" = "" ]
 		do
-			read -p "${b}Ok, now paste the ssh public key you copied from your local workstation here: ${x}" sshpubkey
+			read -rp "${b}Ok, now paste the ssh public key you copied from your local workstation here: ${x}" sshpubkey
 			echo
 		done
 		valid=n
@@ -224,7 +223,7 @@ then
 			currsshport="$(grep '^ *Port *' /etc/ssh/sshd_config | sed 's|Port ||g')"
 			echo "SSH port currently set to $currsshport"
 			echo
-			read -p "Change it to 42022? (Y/n): " -n 1 -r
+			read -rp "Change it to 42022? (Y/n): " -n 1 -r
 			echo
 			if [[ ! $REPLY =~ ^[Nn]$ ]]
 			then
@@ -241,7 +240,7 @@ then
 			fi
 		fi
 	else
-		read -p "'Port' syntax abnormal [commented, or other]. Fixing it now. Also set it to 42022? (Y/n): " -n 1 -r
+		read -rp "'Port' syntax abnormal [commented, or other]. Fixing it now. Also set it to 42022? (Y/n): " -n 1 -r
 		echo
 		if [[ ! $REPLY =~ ^[Nn]$ ]]
                 then
@@ -262,7 +261,7 @@ then
 	        fi
 	fi
 else
-	read -p "'Port' line not found. Add it now. Also set it to 42022? (Y/n): " -n 1 -r
+	read -rp "'Port' line not found. Add it now. Also set it to 42022? (Y/n): " -n 1 -r
         echo
         if [[ ! $REPLY =~ ^[Nn]$ ]]
         then
@@ -319,14 +318,14 @@ echo "Now, on your workstation, open a new terminal and open a new SSH session t
 echo
 echo "If that works, close that session, come back to this one, and continue running this script, otherwise start over."
 echo
-read -p "Has the new SSH session worked? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
+read -rp "Has the new SSH session worked? (y/N): " confirm && [[ $confirm == [yY] ]] || exit 1
 echo
 echo "Ok, continuing..."
 echo
 
 
 
-read -p "7] Now setting timezone. Do so at the next screen. Press enter to continue"
+read -rp "7] Now setting timezone. Do so at the next screen. Press enter to continue"
 echo
 dpkg-reconfigure tzdata
 echo
@@ -339,7 +338,7 @@ echo "${b}The current non-root full users with a home directory are:${x}"
 echo
 echo $currusers
 echo
-read -p "Add non-root user now? (Y/n): " -n 1 -r
+read -rp "Add non-root user now? (Y/n): " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Nn]$ ]]
 then
@@ -349,7 +348,7 @@ then
 		newuser=""
 		until [ ! $newuser = "" ]
 		do
-			read -p "${b}Ok, adding user now. Specify the new user's username: ${x}" newuser
+			read -rp "${b}Ok, adding user now. Specify the new user's username: ${x}" newuser
 			echo
 		done
 		valid=n
@@ -392,7 +391,20 @@ then
 	done
 	adduser --disabled-password --gecos "" $newuser
 	usermod -aG sudo $newuser
+	read -rp "${b}Also generate random password for | $newuser |? (Y/n): ${x}" -n 1 -r
 	echo
+	if [[ ! $REPLY =~ ^[Nn]$ ]]
+	then
+		non_root_user_pw="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 24 | head -n 1)"
+		echo "${b}Ok, assigning user | $newuser | the following password:${x}"
+		echo
+		echo "${b} | ${g}${non_root_user_pw}${x}${b} |${x}"
+		echo
+		echo "${newuser}:${non_root_user_pw}" | chpasswd
+		echo
+		read -rp "${b}Press enter to continue...${x}"
+		echo
+	fi
 else
 	echo
 	echo "${b}Skipping non-root user creation.${x}"
@@ -400,13 +412,37 @@ else
 fi
 
 
-
-echo "${b}9] Now unsetting root password...${x}"
+read -rp "${b}9] Would you like to generate a random password for | root |? (Y/n): ${x}" -n 1 -r
 echo
-sudo passwd -dl root
-echo
-echo "${b}Root password unset.${x}"
-echo
+if [[ ! $REPLY =~ ^[Nn]$ ]]
+then
+	root_user_pw="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 24 | head -n 1)"
+	echo "${b}Ok, assigning user | root | the following password:${x}"
+	echo
+	echo "${b} | ${g}${root_user_pw}${x}${b} |${x}"
+	echo
+	echo "root:${_root_user_pw}" | chpasswd
+	echo
+	read -rp "${b}Press enter to continue...${x}"
+	echo
+else
+	echo "${b}Ok, skipping root user password generation.${x}"
+	echo
+	read -rp "${b}Would you instead like to entire unset the password for | root |? (Y/n): ${x}" -n 1 -r
+	echo
+	if [[ ! $REPLY =~ ^[Nn]$ ]]
+	then
+		echo "${b}Now unsetting root password...${x}"
+		echo
+		sudo passwd -dl root
+		echo
+		echo "${g}${b}Root password unset.${x}"
+		echo
+	else
+		echo "${b}Ok, skipping root user password unsetting.${x}"
+		echo
+	fi
+fi
 
 
 
