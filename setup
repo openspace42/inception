@@ -425,6 +425,7 @@ then
 	read -rp "${b}Press enter to continue...${x}"
 	echo
 else
+	echo
 	echo "${b}Ok, skipping root user password generation.${x}"
 	echo
 	read -rp "${b}Would you instead like to entire unset the password for | root |? (Y/n): ${x}" -n 1 -r
@@ -438,6 +439,7 @@ else
 		echo "${g}${b}Root password unset.${x}"
 		echo
 	else
+		echo
 		echo "${b}Ok, skipping root user password unsetting.${x}"
 		echo
 	fi
