@@ -8,9 +8,17 @@ set -eu
 
 ################################################################################
 
-### Start fresh
-
-clear
+if [[ "${@#--return-check}" = "$@" ]]
+then
+    echo
+    echo "This script must not be run directly."
+    echo
+    echo "You should instead run the | setup | script and it will take care of the installation itself."
+    echo
+    echo "Exiting..."
+    echo
+    exit 1
+fi
 
 ################################################################################
 
@@ -49,58 +57,6 @@ synthia-define_formatting
 
 ################################################################################
 
-### Check for root user runtime
-
-synthia-check_root
-
-################################################################################
-
-### Head setup
-
-echo "${g-}${b-}Initiating setup...${x-}"
-echo
-
-################################################################################
-
-### Evaluate command arguments for custom-version install
-
-while getopts ":d:p:" arguments
-do
-    case $arguments in
-        d)	export custom_dna_version="$OPTARG"
-	        ;;
-		p)	export custom_project_version="$OPTARG"
-	        ;;
-        \?)	echo "${r-}${b-}Invalid option | ${n-}-$OPTARG${r-} | for function | ${n-}${FUNCNAME[0]}${r-} |.${x-}"
-	        echo
-			echo "${b-}Exiting...${x-}"
-			echo
-	        exit 1
-	        ;;
-    esac
-done
-OPTIND=1
-
-### Download dna
-
-if [ ! -z "${custom_dna_version-}" ]
-then
-	case $custom_dna_version in
-		b)	echo "${r-}${b-}Fetching bleeding-edge dna version as per | ${n-}-d b${r-} |.${x-}"
-			echo
-			synthia-download_dna
-			;;
-		l)	echo "${r-}${b-}Disabling dna fetch and using local version as per | ${n-}-d l${r-} |.${x-}"
-			;;
-		*)	echo "${r-}${b-}Invalid content for | ${n-}custom_dna_version${r-} | in function | ${n-}${FUNCNAME[0]}${r-} |.${x-}"
-			echo
-			echo "Exiting..."
-			echo
-			exit 1
-			;;
-	esac
-fi
-
 ### Source dna
 
 synthia-source_dna
@@ -113,8 +69,30 @@ synthia-define_vars
 
 ################################################################################
 
-### Actually run the installer
+### Check for any already existing installation
 
-dna-run_install
+dna-check_install_version
 
 ################################################################################
+
+### Install repo contents into destination dir
+
+dna-echo -m "Now installing repository contents into destination directory."
+
+rsync -aAXx "${source_dir}/" "${install_dir}/" --include=tools*** --include=functions --exclude="*"
+
+dna-echo -m $"${g-}Finished installing repository contents into destination directory."
+
+################################################################################
+
+### Head install
+
+dna-echo -m "Initiating install..."
+
+synthia-perform_installation
+
+################################################################################
+
+### Mark installer as completed successfully
+
+touch "$source_dir/install_complete"
