@@ -1,8 +1,8 @@
 # inception
 
-## What it is and what it does
+## What it is and what it does:
 
-This is our reference first boot script for any Debian / Ubuntu server and will perform the following actions:
+Here at openspace, this is our reference first boot script for any Debian / Ubuntu machine. It will perform the following actions:
 
 01. Prompt you to update the machine hostname
 02. Set your default locale to something that actually works
@@ -15,3 +15,19 @@ This is our reference first boot script for any Debian / Ubuntu server and will 
 06. Create a non-root user and allowing it to sudo
 07. Install essential system utilities that you'll love
 08. Performing a full APT update / upgrade / dist-upgrade / autoremove
+
+## How to execute:
+
+```
+[log in as root on your target machine]
+```
+
+```
+apt update
+apt install git
+```
+
+```
+git clone https://github.com/openspace42/inception
+bash inception/setup
+```
