@@ -1,0 +1,115 @@
+#!/usr/bin/env bash
+
+################################################################################
+
+### Set bash environment error management
+
+set -eu
+
+################################################################################
+
+### Start fresh
+
+clear
+
+################################################################################
+
+### Determine script execution directory and install directory.
+
+exec_dir="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+exec_dir_trim_2="$( echo ${exec_dir} | cut -f 1,2,3 -d'/')"
+exec_dir_trim_3="$( echo ${exec_dir} | cut -f 1,2,3,4 -d'/')"
+
+if [ -f "${exec_dir_trim_2}/functions" ]
+then
+	exec_dir_root="${exec_dir_trim_2}"
+else
+	if [ -f "${exec_dir_trim_3}/functions" ]
+	then
+		exec_dir_root="${exec_dir_trim_3}"
+	else
+		echo "Functions file not found in any second or third level parent directory of: | ${exec_dir} |."
+		echo
+		echo "Exiting..."
+		echo
+        exit 1
+	fi
+fi
+
+### Source local functions file.
+
+. "$exec_dir_root/functions"
+
+################################################################################
+
+### Define formatting
+
+synthia-define_formatting
+
+################################################################################
+
+### Check for root user runtime
+
+synthia-check_root
+
+################################################################################
+
+### Head upgrade
+
+echo "${g-}${b-}Initiating upgrade...${x-}"
+echo
+
+################################################################################
+
+### Evaluate command arguments for custom-version install
+
+while getopts ":d:p:" arguments
+do
+    case $arguments in
+        d)	export custom_dna_version="${OPTARG}"
+	        ;;
+		p)	export custom_project_version="${OPTARG}"
+	        ;;
+        \?)	echo "${r-}${b-}Invalid option | ${n-}-$OPTARG${r-} | for function | ${n-}${FUNCNAME[0]}${r-} |.${x-}"
+	        echo
+			echo "${b-}Exiting...${x-}"
+			echo
+	        exit 1
+	        ;;
+    esac
+done
+OPTIND=1
+
+### Download dna
+
+synthia-download_dna
+
+### Source dna
+
+synthia-source_dna
+
+################################################################################
+
+### Define variables
+
+synthia-define_vars
+
+################################################################################
+
+### Clone and upgrade
+
+if [ -d "/root/${proj_name}/" ]
+then
+        rm -r "/root/${proj_name}/"
+fi
+
+echo
+
+cd
+
+git clone "${git_host}/${author_name}/${proj_name}"
+
+dna-run_install
+
+################################################################################
