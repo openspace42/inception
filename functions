@@ -15,7 +15,7 @@ synthia-define_vars() {
 	############################################################################
 
 	export proj_name="inception"
-	export project_nane="inception"
+	export project_name="inception"
 	export author_name="openspace42"
 	export git_host="https://github.com"
 
