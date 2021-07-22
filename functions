@@ -15,11 +15,12 @@ synthia-define_vars() {
 	############################################################################
 
 	export proj_name="inception"
+	export project_nane="inception"
 	export author_name="openspace42"
 	export git_host="https://github.com"
 
 	### Set this to `y` if your project stores no data on end users' machines that could go lost during a re-install or update
-	export skip_install_time_backup="y"
+ 	export backup_prompt_during_install="y"
 
 	### Set this to the directory that has the most impactful size when performing a backup [such as `/var/www/` for nginx-related projects]
 	export backup_ref_dir="/path/to/ref/dir"
